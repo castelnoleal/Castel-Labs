@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EDM Forge Project",
+  "type": "object",
+  "required": ["genre", "bpm", "key", "mood", "energy", "description", "tags", "sections"],
+  "properties": {
+    "genre": {"type": "string"},
+    "bpm": {"type": "integer", "minimum": 40, "maximum": 300},
+    "key": {"type": "string"},
+    "mood": {"type": "string"},
+    "energy": {"type": "integer", "minimum": 0, "maximum": 100},
+    "description": {"type": "string"},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "instruction"],
+        "properties": {
+          "name": {"type": "string"},
+          "instruction": {"type": "string"},
+          "tags": {"type": "array", "items": {"type": "string"}},
+          "version": {"type": "integer", "minimum": 1}
+        }
+      }
+    }
+  }
+}
