@@ -12,21 +12,41 @@ A mobile-friendly EDM music generator/editor that runs as a static web app.
 - Iterative improvement and version history
 - Browser-side procedural audio generation using Web Audio API
 - Real-time playback controls
-- Waveform-style visualizer
+- Waveform visualizer
 - Real WAV export
 - No API key or server required for the current engine
 - Responsive mobile/desktop UI
 
-## How it works
+## Architecture
 
-The current engine converts the selected genre, BPM, key, mood, energy, tags and description into an arrangement and synthesizes the result in an `OfflineAudioContext`. This makes the application immediately usable from a static GitHub Pages deployment.
+The project separates musical intent from rendering. Project state contains genre, BPM, key, mood, energy, description, tags, selected section and version history. This lets a future neural music backend replace or augment the procedural renderer without redesigning the editor.
 
-The editor is intentionally structured so a future cloud AI music provider can be added as a second engine without replacing the project/version/tag UI.
+The browser renderer is the immediate fallback and works without a server. Web Audio provides direct access to audio buffers and scheduling controls.
+
+## AI engine roadmap
+
+A neural provider should be implemented as a server-side adapter rather than exposing model/API secrets in the browser. Meta's AudioCraft MusicGen is one viable research/reference implementation. Its official documentation supports text-to-music and text+melody generation and documents multiple model variants; the medium model is intended for GPU-backed inference, so it should remain an optional server-side engine rather than a browser dependency.
+
+Recommended provider contract:
+
+`POST /api/generate`
+
+Input: project musical specification + selected section + modification instructions.
+
+Output: audio asset URL/bytes + duration + sample rate + provider metadata.
+
+The browser keeps project/version state and uses the provider only for rendering. Section regeneration sends only the selected section's intent while retaining the global project DNA.
 
 ## Run
 
 Open `index.html` in a modern browser. For GitHub Pages, publish the `edm-generator` directory as a static site.
 
-## Next AI engine integration
+## Future upgrades
 
-The UI already separates musical intent from rendering. A future MusicGen/JASCO-compatible backend can accept the generated musical specification and return rendered audio. This is preferable to putting a model/API secret directly in the browser.
+1. Server-side neural provider adapter.
+2. Persistent project save/load.
+3. True section-level audio replacement and crossfading.
+4. Stems/MIDI export.
+5. Waveform selection and trim controls.
+6. Complete project-state undo/redo snapshots.
+7. Optional user-provided reference audio for supported style/melody conditioning.
